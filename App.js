@@ -1,8 +1,11 @@
 import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
 import BottomTabNavigator from "./navigation/BottomTabNavigator";
 
-const App = () => {
-  return <BottomTabNavigator />;
-};
-
-export default App;
+export default function App() {
+  return (
+    <NavigationContainer>
+      <BottomTabNavigator />
+    </NavigationContainer>
+  );
+}
