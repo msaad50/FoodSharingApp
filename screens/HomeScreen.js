@@ -1,13 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
 
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome to Food Sharing App!</Text>
+      <Text style={styles.welcomeText}>Welcome to Food Sharing App!</Text>
       <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate("Profile")}
+        title="View Listings"
+        onPress={() => navigation.navigate("Listings")}
       />
     </View>
   );
@@ -18,11 +18,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#f9f9f9",
   },
-  text: {
+  welcomeText: {
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 20,
   },
 });
 
