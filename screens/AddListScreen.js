@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const ListingScreen = () => {
+const AddListScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Food Listings</Text>
+      <Text style={styles.text}>Add a New Listing</Text>
     </View>
   );
 };
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListingScreen;
+export default AddListScreen;
