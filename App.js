@@ -1,4 +1,4 @@
-import { StatusBar } from "expo-status-bar";
+/*import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 
 export const App = () => {
@@ -20,3 +20,10 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+*/
+
+import AppNavigator from "./navigation/AppNavigator";
+
+export default function App() {
+  return <AppNavigator />;
+}
