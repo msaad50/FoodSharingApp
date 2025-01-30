@@ -1,23 +1,35 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 
-const ListingScreen = () => {
+const ListingScreen = ({ route }) => {
+  const item = route.params?.item || {};
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Food Listings</Text>
+      {Object.keys(item).length > 0 ? (
+        <>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text>Expiry: {item.expiry}</Text>
+          <Text>Donor: {item.donor}</Text>
+          {/* Add more details here */}
+        </>
+      ) : (
+        <Text style={styles.text}>Select a listing to view details</Text>
+      )}
     </View>
   );
 };
 
+// Add these styles:
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 16,
   },
-  text: {
-    fontSize: 20,
+  title: {
+    fontSize: 24,
     fontWeight: "bold",
+    marginBottom: 16,
   },
 });
 

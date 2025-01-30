@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "99896046771",
+    "project_id": "foodsharingapp-dee7f",
+    "storage_bucket": "foodsharingapp-dee7f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99896046771:android:50f5b29e83af8abc172cc6",
+        "android_client_info": {
+          "package_name": "com.yourcompany.foodsharingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOxBgR3z8qS0IEuhkE7R8isykjMWYZOVo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
