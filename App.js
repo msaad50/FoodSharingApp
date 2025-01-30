@@ -1,4 +1,5 @@
 import React from "react";
+import { Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import AppNavigator from "./navigation/AppNavigator";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -8,6 +9,7 @@ export default function App() {
     <AuthProvider>
       <NavigationContainer>
         <AppNavigator />
+        <Text> </Text>
       </NavigationContainer>
     </AuthProvider>
   );

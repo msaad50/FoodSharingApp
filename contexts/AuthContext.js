@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { Text } from "react-native";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../config/firebaseConfig";
 
@@ -16,6 +17,12 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  if (loading) {
+    return (
+      <Text style={{ textAlign: "center", marginTop: 50 }}>Loading...</Text>
+    ); // Ensure the string is wrapped in <Text>
+  }
+
   return (
     <AuthContext.Provider value={{ user, loading }}>
       {children}
@@ -23,5 +30,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom Hook to use AuthContext
 export const useAuth = () => useContext(AuthContext);

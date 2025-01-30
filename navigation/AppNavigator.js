@@ -1,5 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import { Text } from "react-native";
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
@@ -10,7 +11,9 @@ const Stack = createStackNavigator();
 const AppNavigator = () => {
   const { user, loading } = useAuth();
 
-  if (loading) return null; // Prevent flickering
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <Stack.Navigator>

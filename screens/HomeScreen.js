@@ -52,7 +52,6 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-// Add these styles:
 const styles = StyleSheet.create({
   header: {
     fontSize: 24,

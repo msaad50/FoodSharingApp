@@ -20,7 +20,6 @@ const ListingScreen = ({ route }) => {
   );
 };
 
-// Add these styles:
 const styles = StyleSheet.create({
   container: {
     flex: 1,
