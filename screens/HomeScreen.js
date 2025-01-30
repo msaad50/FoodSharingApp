@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,29 +6,33 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-
-const dummyData = [
-  {
-    id: "1",
-    title: "Fresh Bread",
-    expiry: "2024-04-30",
-    donor: "Local Bakery",
-  },
-  {
-    id: "2",
-    title: "Vegetables Box",
-    expiry: "2024-04-28",
-    donor: "Community Garden",
-  },
-];
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
 
 const HomeScreen = ({ navigation }) => {
+  const [listings, setListings] = useState([]);
+
+  // Fetch Listings from Firestore
+  useEffect(() => {
+    const q = query(collection(db, "listings"), orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const items = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setListings(items);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Available Now</Text>
 
       <FlatList
-        data={dummyData}
+        data={listings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -37,7 +41,7 @@ const HomeScreen = ({ navigation }) => {
           >
             <Text style={styles.title}>{item.title}</Text>
             <Text>Expires: {item.expiry}</Text>
-            <Text>From: {item.donor}</Text>
+            <Text>From: {item.donor || "Unknown"}</Text>
           </TouchableOpacity>
         )}
       />
@@ -53,6 +57,10 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
   header: {
     fontSize: 24,
     fontWeight: "bold",

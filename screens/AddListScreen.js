@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
 
-const AddListScreen = () => {
+const AddListScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [expiry, setExpiry] = useState("");
   const [image, setImage] = useState(null);
 
+  // Pick Image from Gallery
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -20,14 +23,28 @@ const AddListScreen = () => {
     }
   };
 
-  const handleSubmit = () => {
+  // Submit Food Listing to Firestore
+  const handleSubmit = async () => {
     if (!title || !expiry) {
       Alert.alert("Error", "Please fill in required fields");
       return;
     }
-    // TODO: Connect to Firebase
-    console.log({ title, description, expiry, image });
-    Alert.alert("Success", "Listing submitted for review!");
+
+    try {
+      await addDoc(collection(db, "listings"), {
+        title,
+        description,
+        expiry,
+        image: image || null, // Store image URI if available
+        createdAt: serverTimestamp(),
+      });
+
+      Alert.alert("Success", "Listing submitted!");
+      navigation.navigate("Home"); // Go back to HomeScreen after submission
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      Alert.alert("Error", "Could not submit listing.");
+    }
   };
 
   return (
