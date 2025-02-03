@@ -9,9 +9,7 @@ export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <View style={styles.logoContainer}>
-          <Logo />
-        </View>
+        <View></View>
 
         <AppNavigator />
       </NavigationContainer>

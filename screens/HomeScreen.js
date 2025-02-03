@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+/* import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -87,6 +87,95 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "bold",
+  },
+});
+
+export default HomeScreen;
+*/
+
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
+
+const HomeScreen = ({ navigation }) => {
+  const [listings, setListings] = useState([]);
+
+  // Fetch Listings from Firestore
+  useEffect(() => {
+    const q = query(collection(db, "listings"), orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const items = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setListings(items);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Available Now</Text>
+
+      <FlatList
+        data={listings}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.listingCard}
+            onPress={() => navigation.navigate("Listings", { item })}
+          >
+            {item.image && (
+              <Image source={{ uri: item.image }} style={styles.listingImage} />
+            )}{" "}
+            {/* ✅ Display image */}
+            <Text style={styles.title}>{item.title}</Text>
+            <Text>Expires: {item.expiry}</Text>
+            <Text>From: {item.donor || "Unknown"}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    padding: 16,
+  },
+  listingCard: {
+    backgroundColor: "#fff",
+    padding: 16,
+    margin: 8,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  listingImage: {
+    width: "100%",
+    height: 150,
+    resizeMode: "cover",
+    borderRadius: 8,
+    marginBottom: 10,
   },
 });
 
