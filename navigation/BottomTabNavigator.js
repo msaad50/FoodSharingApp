@@ -34,7 +34,6 @@ const BottomTabNavigator = () => {
         headerShown: false,
       })}
     >
-      {/* ✅ Ensure each screen is correctly inside <Tab.Screen> */}
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Add" component={AddListScreen} />
       <Tab.Screen name="Listings" component={ListingScreen} />
