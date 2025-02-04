@@ -5,6 +5,7 @@ import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import { useAuth } from "../contexts/AuthContext";
+import ItemViewScreen from "../view/ItemViewScreen";
 
 const Stack = createStackNavigator();
 
@@ -42,6 +43,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Signup" component={SignupScreen} />
         </>
       )}
+      <Stack.Screen name="ItemView" component={ItemViewScreen} />
     </Stack.Navigator>
   );
 };

@@ -143,12 +143,12 @@ const AddListScreen = ({ navigation }) => {
         title,
         description,
         expiry,
-        image, // ✅ Save image URI
+        image,
         createdAt: serverTimestamp(),
       });
 
       Alert.alert("Success", "Listing submitted!");
-      navigation.navigate("Home"); // Go back to HomeScreen after submission
+      navigation.navigate("Home");
     } catch (error) {
       console.error("Error adding document: ", error);
       Alert.alert("Error", "Could not submit listing.");
@@ -177,10 +177,8 @@ const AddListScreen = ({ navigation }) => {
         style={styles.input}
       />
       <Button title="Upload Photo" onPress={pickImage} />
-      {image && (
-        <Image source={{ uri: image }} style={styles.imagePreview} />
-      )}{" "}
-      {/* ✅ Show image preview */}
+      {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+
       <Button title="Submit Listing" onPress={handleSubmit} color="#42a5f5" />
     </View>
   );
