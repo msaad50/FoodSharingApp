@@ -8,25 +8,41 @@ import {
   Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 const FavouritesScreen = ({ navigation }) => {
   const [favourites, setFavourites] = useState([]);
 
   // Load Favourites from AsyncStorage
-  useEffect(() => {
-    const loadFavourites = async () => {
-      try {
-        const storedFavourites = await AsyncStorage.getItem("favourites");
-        if (storedFavourites) {
-          setFavourites(JSON.parse(storedFavourites));
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadFavourites = async () => {
+        try {
+          const storedFavourites = await AsyncStorage.getItem("favourites");
+          if (storedFavourites) {
+            setFavourites(JSON.parse(storedFavourites));
+          }
+        } catch (error) {
+          console.error("Error loading favourites:", error);
         }
-      } catch (error) {
-        console.error("Error loading favourites:", error);
-      }
-    };
+      };
+      loadFavourites();
+    }, [])
+  );
 
-    loadFavourites();
-  }, []);
+  // Remove Favourite & Sync with HomeScreen
+  const toggleFavourite = async (itemId) => {
+    try {
+      const updatedFavourites = favourites.filter((item) => item.id !== itemId);
+      setFavourites(updatedFavourites);
+      await AsyncStorage.setItem(
+        "favourites",
+        JSON.stringify(updatedFavourites)
+      );
+    } catch (error) {
+      console.error("Error removing favourite:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -39,20 +55,28 @@ const FavouritesScreen = ({ navigation }) => {
           data={favourites}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.listingCard}
-              onPress={() => navigation.navigate("ItemView", { item })}
-            >
-              {item.image && (
-                <Image
-                  source={{ uri: item.image }}
-                  style={styles.listingImage}
-                />
-              )}
-              <Text style={styles.title}>{item.title}</Text>
-              <Text>Expires: {item.expiry}</Text>
-              <Text>From: {item.donor || "Unknown"}</Text>
-            </TouchableOpacity>
+            <View style={styles.listingCard}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ItemView", { item })}
+              >
+                {item.image && (
+                  <Image
+                    source={{ uri: item.image }}
+                    style={styles.listingImage}
+                  />
+                )}
+                <Text style={styles.title}>{item.title}</Text>
+                <Text>Expires: {item.expiry}</Text>
+                <Text>From: {item.donor || "Unknown"}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.favButton}
+                onPress={() => toggleFavourite(item.id)}
+              >
+                <Text style={styles.favButtonText}>❤️</Text>
+              </TouchableOpacity>
+            </View>
           )}
         />
       )}
@@ -61,15 +85,8 @@ const FavouritesScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    padding: 16,
-  },
+  container: { flex: 1, padding: 16 },
+  header: { fontSize: 24, fontWeight: "bold", padding: 16 },
   noFavourites: {
     textAlign: "center",
     fontSize: 16,
@@ -83,10 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 2,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
+  title: { fontSize: 18, fontWeight: "600" },
   listingImage: {
     width: "100%",
     height: 150,
@@ -94,6 +108,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
+  favButton: { position: "absolute", top: 10, right: 10, padding: 10 },
+  favButtonText: { fontSize: 22 },
 });
 
 export default FavouritesScreen;
