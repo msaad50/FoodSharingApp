@@ -9,14 +9,15 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import { useFocusEffect } from "@react-navigation/native";
 import { db } from "../config/firebaseConfig";
+import { useFocusEffect } from "@react-navigation/native";
+import { AirbnbRating } from "react-native-ratings";
 
 const HomeScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
   const [favourites, setFavourites] = useState({});
 
-  // Load Listings from Firestore
+  // Fetch Listings from Firestore
   useEffect(() => {
     const q = query(collection(db, "listings"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -29,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
-  // Load Favourites from AsyncStorage
+  // Load Favourites from AsyncStorage & Sync when Screen Focuses
   useFocusEffect(
     React.useCallback(() => {
       const loadFavourites = async () => {
@@ -51,7 +52,7 @@ const HomeScreen = ({ navigation }) => {
     }, [])
   );
 
-  // Toggle Favourites
+  // Toggle Favourites & Sync with AsyncStorage
   const toggleFavourite = async (item) => {
     let storedFavourites = await AsyncStorage.getItem("favourites");
     storedFavourites = storedFavourites ? JSON.parse(storedFavourites) : [];
@@ -89,10 +90,24 @@ const HomeScreen = ({ navigation }) => {
                 />
               )}
               <Text style={styles.title}>{item.title}</Text>
+              <Text>
+                From: {item.firstName} {item.lastName}
+              </Text>
               <Text>Expires: {item.expiry}</Text>
-              <Text>From: {item.donor || "Unknown"}</Text>
+
+              {/* ⭐ Show rating */}
+              <View style={styles.ratingContainer}>
+                <AirbnbRating
+                  count={5}
+                  defaultRating={item.rating}
+                  size={15}
+                  showRating={false}
+                  isDisabled
+                />
+              </View>
             </TouchableOpacity>
 
+            {/* ❤️ Favourite Button */}
             <TouchableOpacity
               style={styles.favButton}
               onPress={() => toggleFavourite(item)}
@@ -134,6 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
+  ratingContainer: { marginTop: 5, alignItems: "flex-start" },
   favButton: { position: "absolute", top: 10, right: 10, padding: 10 },
   favButtonText: { fontSize: 22 },
   addButton: {

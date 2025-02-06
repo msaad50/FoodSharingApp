@@ -9,11 +9,12 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { AirbnbRating } from "react-native-ratings";
 
 const FavouritesScreen = ({ navigation }) => {
   const [favourites, setFavourites] = useState([]);
 
-  // Load Favourites from AsyncStorage
+  // Load Favourites from AsyncStorage (Update in real-time)
   useFocusEffect(
     React.useCallback(() => {
       const loadFavourites = async () => {
@@ -66,8 +67,21 @@ const FavouritesScreen = ({ navigation }) => {
                   />
                 )}
                 <Text style={styles.title}>{item.title}</Text>
+                <Text>
+                  From: {item.firstName} {item.lastName}
+                </Text>
                 <Text>Expires: {item.expiry}</Text>
-                <Text>From: {item.donor || "Unknown"}</Text>
+
+                {/* ⭐ Show rating */}
+                <View style={styles.ratingContainer}>
+                  <AirbnbRating
+                    count={5}
+                    defaultRating={item.rating}
+                    size={15}
+                    showRating={false}
+                    isDisabled
+                  />
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -99,6 +113,7 @@ const styles = StyleSheet.create({
     margin: 8,
     borderRadius: 8,
     elevation: 2,
+    position: "relative",
   },
   title: { fontSize: 18, fontWeight: "600" },
   listingImage: {
@@ -108,6 +123,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
+  ratingContainer: { marginTop: 5, alignItems: "flex-start" },
   favButton: { position: "absolute", top: 10, right: 10, padding: 10 },
   favButtonText: { fontSize: 22 },
 });
