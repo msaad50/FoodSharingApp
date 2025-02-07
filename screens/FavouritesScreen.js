@@ -84,6 +84,7 @@ const FavouritesScreen = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
 
+              {/* ❤️ Favourite Button */}
               <TouchableOpacity
                 style={styles.favButton}
                 onPress={() => toggleFavourite(item.id)}
@@ -100,7 +101,12 @@ const FavouritesScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  header: { fontSize: 24, fontWeight: "bold", padding: 16 },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    padding: 16,
+    marginBottom: 10,
+  },
   noFavourites: {
     textAlign: "center",
     fontSize: 16,
@@ -112,14 +118,14 @@ const styles = StyleSheet.create({
     padding: 16,
     margin: 8,
     borderRadius: 8,
-    elevation: 2,
+    elevation: 3,
     position: "relative",
   },
-  title: { fontSize: 18, fontWeight: "600" },
+  title: { fontSize: 18, fontWeight: "bold" },
   listingImage: {
     width: "100%",
-    height: 150,
-    resizeMode: "contain",
+    height: 180,
+    resizeMode: "cover",
     borderRadius: 8,
     marginBottom: 10,
   },
