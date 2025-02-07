@@ -8,15 +8,15 @@ const ItemViewScreen = ({ route }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.card}>
-        {/* 📌 Display Image */}
+        {/* Display Image */}
         {item.image && (
           <Image source={{ uri: item.image }} style={styles.listingImage} />
         )}
 
-        {/* 📌 Title */}
+        {/* Title */}
         <Text style={styles.title}>{item.title}</Text>
 
-        {/* 📌 Food Donor Info */}
+        {/* Food Donor Info */}
         <Text style={styles.subTitle}>
           Donated By:{" "}
           <Text style={styles.boldText}>
@@ -24,16 +24,16 @@ const ItemViewScreen = ({ route }) => {
           </Text>
         </Text>
 
-        {/* 📌 Expiry Date */}
+        {/* Expiry Date */}
         <Text style={styles.expiryText}>Expires: {item.expiry}</Text>
 
-        {/* 📌 Description */}
+        {/* Description */}
         <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.description}>
           {item.description || "No description available"}
         </Text>
 
-        {/* 📌 ⭐ Condition Rating */}
+        {/* Condition Rating */}
         <View style={styles.ratingContainer}>
           <Text style={styles.sectionTitle}>Condition Rating:</Text>
           <AirbnbRating
