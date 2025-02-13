@@ -43,7 +43,13 @@ const AppNavigator = () => {
           <Stack.Screen name="Signup" component={SignupScreen} />
         </>
       )}
-      <Stack.Screen name="ItemView" component={ItemViewScreen} />
+      <Stack.Screen
+        name="ItemView"
+        component={ItemViewScreen}
+        options={({ route }) => ({
+          title: route.params?.item?.title || "Item",
+        })}
+      />
     </Stack.Navigator>
   );
 };

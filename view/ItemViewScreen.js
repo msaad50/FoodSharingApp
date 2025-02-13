@@ -35,15 +35,15 @@ const ItemViewScreen = ({ route }) => {
           </View>
         )}
 
-        {/* Latitude & Longitude */}
-        {item.latitude && item.longitude && (
+        {/* Latitude & Longitude 
+{item.latitude && item.longitude && (
           <View>
             <Text style={styles.sectionTitle}>Coordinates</Text>
             <Text style={styles.infoText}>
               Latitude: {item.latitude} | Longitude: {item.longitude}
             </Text>
           </View>
-        )}
+        )} */}
 
         {/* Description */}
         <Text style={styles.sectionTitle}>Description</Text>
