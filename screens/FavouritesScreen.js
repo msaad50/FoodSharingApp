@@ -14,7 +14,6 @@ import { AirbnbRating } from "react-native-ratings";
 const FavouritesScreen = ({ navigation }) => {
   const [favourites, setFavourites] = useState([]);
 
-  // Load Favourites from AsyncStorage (Update in real-time)
   useFocusEffect(
     React.useCallback(() => {
       const loadFavourites = async () => {
@@ -48,7 +47,6 @@ const FavouritesScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Favourite Listings</Text>
-
       {favourites.length === 0 ? (
         <Text style={styles.noFavourites}>No favourites added yet.</Text>
       ) : (
@@ -71,8 +69,8 @@ const FavouritesScreen = ({ navigation }) => {
                   From: {item.firstName} {item.lastName}
                 </Text>
                 <Text>Expires: {item.expiry}</Text>
+                <Text>Location: {item.address}</Text>
 
-                {/* ⭐ Show rating */}
                 <View style={styles.ratingContainer}>
                   <AirbnbRating
                     count={5}
@@ -84,7 +82,6 @@ const FavouritesScreen = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
 
-              {/* ❤️ Favourite Button */}
               <TouchableOpacity
                 style={styles.favButton}
                 onPress={() => toggleFavourite(item.id)}
@@ -98,15 +95,9 @@ const FavouritesScreen = ({ navigation }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    padding: 16,
-    marginBottom: 10,
-  },
+  header: { fontSize: 24, fontWeight: "bold", padding: 16, marginBottom: 10 },
   noFavourites: {
     textAlign: "center",
     fontSize: 16,
@@ -117,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
     margin: 8,
-    borderRadius: 8,
+    borderRadius: 12,
     elevation: 3,
     position: "relative",
   },

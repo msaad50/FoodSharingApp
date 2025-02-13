@@ -27,6 +27,24 @@ const ItemViewScreen = ({ route }) => {
         {/* Expiry Date */}
         <Text style={styles.expiryText}>Expires: {item.expiry}</Text>
 
+        {/* Address */}
+        {item.address && (
+          <View>
+            <Text style={styles.sectionTitle}>Collection Address</Text>
+            <Text style={styles.infoText}>{item.address}</Text>
+          </View>
+        )}
+
+        {/* Latitude & Longitude */}
+        {item.latitude && item.longitude && (
+          <View>
+            <Text style={styles.sectionTitle}>Coordinates</Text>
+            <Text style={styles.infoText}>
+              Latitude: {item.latitude} | Longitude: {item.longitude}
+            </Text>
+          </View>
+        )}
+
         {/* Description */}
         <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.description}>
@@ -53,7 +71,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#f4f4f4", // Light Grey Background
+    backgroundColor: "#f4f4f4",
   },
   card: {
     backgroundColor: "white",
@@ -63,7 +81,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
-    elevation: 4, // Android shadow
+    elevation: 4,
   },
   listingImage: {
     width: "100%",
@@ -101,6 +119,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 12,
     color: "#444",
+  },
+  infoText: {
+    fontSize: 15,
+    color: "#555",
+    lineHeight: 22,
+    marginBottom: 8,
   },
   description: {
     fontSize: 15,

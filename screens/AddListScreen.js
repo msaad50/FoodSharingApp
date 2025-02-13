@@ -10,11 +10,15 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { AirbnbRating } from "react-native-ratings";
+
+const GOOGLE_API_KEY = "AIzaSyAu7fsmTRtW4qOTEXP3wBBa658hnFm_49A";
 
 const AddListScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -22,10 +26,12 @@ const AddListScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [expiry, setExpiry] = useState("");
+  const [address, setAddress] = useState("");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [image, setImage] = useState(null);
   const [rating, setRating] = useState(3);
 
-  // Request Permission on Component Mount
   useEffect(() => {
     (async () => {
       const { status } =
@@ -55,12 +61,50 @@ const AddListScreen = ({ navigation }) => {
     }
   };
 
-  // Submit Listing to Firestore
+  // **Fetch Coordinates from Google Geocoding API**
+  const getCoordinatesFromAddress = async (enteredAddress) => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          enteredAddress
+        )}&key=${GOOGLE_API_KEY}`
+      );
+      const data = await response.json();
+      if (data.status === "OK") {
+        const location = data.results[0].geometry.location;
+        setLatitude(location.lat);
+        setLongitude(location.lng);
+        console.log("Fetched Lat/Lng:", location.lat, location.lng);
+        return { lat: location.lat, lng: location.lng };
+      } else {
+        Alert.alert("Error", "Could not find coordinates for the address.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!firstName || !lastName || !title || !expiry) {
-      Alert.alert("Error", "Please fill in required fields.");
+    console.log("Submitting with:", {
+      firstName,
+      lastName,
+      title,
+      expiry,
+      address,
+      latitude,
+      longitude,
+      rating,
+    });
+
+    if (!firstName || !lastName || !title || !expiry || !address) {
+      Alert.alert("Error", "Please fill in all required fields.");
       return;
     }
+
+    const location = await getCoordinatesFromAddress(address);
+    if (!location) return;
 
     try {
       await addDoc(collection(db, "listings"), {
@@ -69,6 +113,9 @@ const AddListScreen = ({ navigation }) => {
         title,
         description,
         expiry,
+        address,
+        latitude: location.lat,
+        longitude: location.lng,
         image,
         rating,
         createdAt: serverTimestamp(),
@@ -76,16 +123,18 @@ const AddListScreen = ({ navigation }) => {
 
       Alert.alert("Success", "Listing submitted!");
 
-      // Reset Form Fields After Submission
       setFirstName("");
       setLastName("");
       setTitle("");
       setDescription("");
       setExpiry("");
+      setAddress("");
+      setLatitude(null);
+      setLongitude(null);
       setImage(null);
-      setRating(3); // Reset rating to default
+      setRating(3);
 
-      navigation.navigate("Home"); // Navigate back to Home Screen
+      navigation.navigate("Home");
     } catch (error) {
       console.error("Error adding document: ", error);
       Alert.alert("Error", "Could not submit listing.");
@@ -97,54 +146,71 @@ const AddListScreen = ({ navigation }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TextInput
-          placeholder="First Name *"
-          value={firstName}
-          onChangeText={setFirstName}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Last Name *"
-          value={lastName}
-          onChangeText={setLastName}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Food Title *"
-          value={title}
-          onChangeText={setTitle}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Description"
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          style={[styles.input, { height: 100 }]}
-        />
-        <TextInput
-          placeholder="Expiry Date (YYYY-MM-DD) *"
-          value={expiry}
-          onChangeText={setExpiry}
-          style={styles.input}
-        />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <TextInput
+            placeholder="First Name *"
+            value={firstName}
+            onChangeText={setFirstName}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Last Name *"
+            value={lastName}
+            onChangeText={setLastName}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Food Title *"
+            value={title}
+            onChangeText={setTitle}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Description"
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            style={[styles.input, { height: 100 }]}
+          />
+          <TextInput
+            placeholder="Expiry Date (YYYY-MM-DD) *"
+            value={expiry}
+            onChangeText={setExpiry}
+            style={styles.input}
+          />
 
-        <Text style={styles.ratingLabel}>Rate the food quality:</Text>
-        <AirbnbRating
-          count={5}
-          reviews={["Very Bad", "Bad", "Okay", "Good", "Excellent"]}
-          defaultRating={rating}
-          size={30}
-          onFinishRating={setRating}
-        />
+          {/* 🏠 Address Input */}
+          <TextInput
+            placeholder="Collection Address *"
+            value={address}
+            onChangeText={setAddress}
+            style={styles.input}
+          />
 
-        <Button title="Upload Photo" onPress={pickImage} />
+          <Button title="Upload Photo" onPress={pickImage} />
 
-        {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+          {image && (
+            <Image source={{ uri: image }} style={styles.imagePreview} />
+          )}
 
-        <Button title="Submit Listing" onPress={handleSubmit} color="#42a5f5" />
-      </ScrollView>
+          {/* ⭐ Food Quality Rating */}
+          <Text style={styles.ratingLabel}>Rate the food quality:</Text>
+          <AirbnbRating
+            count={5}
+            reviews={["Very Bad", "Bad", "Okay", "Good", "Excellent"]}
+            defaultRating={rating}
+            size={30}
+            onFinishRating={setRating}
+          />
+
+          <Button
+            title="Submit Listing"
+            onPress={handleSubmit}
+            color="#42a5f5"
+          />
+        </ScrollView>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
@@ -152,9 +218,10 @@ const AddListScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
   },
   scrollContainer: {
-    padding: 16,
     paddingBottom: 50,
   },
   input: {
@@ -163,6 +230,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderRadius: 6,
+    backgroundColor: "#fff",
   },
   imagePreview: {
     width: "100%",

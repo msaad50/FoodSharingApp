@@ -8,31 +8,27 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import MapView, { Marker, Callout } from "react-native-maps";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { useFocusEffect } from "@react-navigation/native";
 import { AirbnbRating } from "react-native-ratings";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
   const [favourites, setFavourites] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch Listings from Firestore
   useEffect(() => {
     const q = query(collection(db, "listings"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setListings(items);
     });
     return () => unsubscribe();
   }, []);
 
-  // Load Favourites from AsyncStorage & Sync when Screen Focuses
   useFocusEffect(
     React.useCallback(() => {
       const loadFavourites = async () => {
@@ -53,7 +49,6 @@ const HomeScreen = ({ navigation }) => {
       loadFavourites();
     }, [])
   );
-
   // Toggle Favourites & Sync with AsyncStorage
   const toggleFavourite = async (item) => {
     let storedFavourites = await AsyncStorage.getItem("favourites");
@@ -73,7 +68,6 @@ const HomeScreen = ({ navigation }) => {
     await AsyncStorage.setItem("favourites", JSON.stringify(storedFavourites));
   };
 
-  // Filtered Listings Based on Search Query
   const filteredListings = listings.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -86,9 +80,7 @@ const HomeScreen = ({ navigation }) => {
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-
       <Text style={styles.header}>Available Now</Text>
-
       <FlatList
         data={filteredListings}
         keyExtractor={(item) => item.id}
@@ -108,7 +100,7 @@ const HomeScreen = ({ navigation }) => {
                 From: {item.firstName} {item.lastName}
               </Text>
               <Text>Expires: {item.expiry}</Text>
-
+              <Text>Location: {item.address}</Text>
               <View style={styles.ratingContainer}>
                 <AirbnbRating
                   count={5}
@@ -119,7 +111,6 @@ const HomeScreen = ({ navigation }) => {
                 />
               </View>
             </TouchableOpacity>
-
             <TouchableOpacity
               style={styles.favButton}
               onPress={() => toggleFavourite(item)}
@@ -131,7 +122,42 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
       />
-
+      <Text style={styles.header}>Near You</Text>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 55.3781,
+          longitude: -3.436,
+          latitudeDelta: 5.5,
+          longitudeDelta: 5.5,
+        }}
+      >
+        {listings.map((item) =>
+          item.latitude && item.longitude ? (
+            <Marker
+              key={item.id}
+              coordinate={{
+                latitude: item.latitude,
+                longitude: item.longitude,
+              }}
+            >
+              <Callout
+                onPress={() => navigation.navigate("ItemView", { item })}
+              >
+                <View style={{ width: 200 }}>
+                  <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
+                  <Text>{item.address}</Text>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={{ width: "100%", height: 100, marginTop: 5 }}
+                  />
+                  <Text style={{ color: "blue" }}>View Details</Text>
+                </View>
+              </Callout>
+            </Marker>
+          ) : null
+        )}
+      </MapView>
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate("Add")}
@@ -153,11 +179,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#f9f9f9",
   },
+  addressText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
+    color: "#555",
+  },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     padding: 10,
     marginTop: 5,
+  },
+  map: {
+    height: 200,
+    marginBottom: 10,
+    borderRadius: 10,
   },
   listingCard: {
     backgroundColor: "#fff",
