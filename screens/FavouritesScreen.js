@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { AirbnbRating } from "react-native-ratings";
 
 const FavouritesScreen = ({ navigation }) => {
   const [favourites, setFavourites] = useState([]);
 
-  // Load Favourites from AsyncStorage
   useFocusEffect(
     React.useCallback(() => {
       const loadFavourites = async () => {
@@ -47,7 +47,6 @@ const FavouritesScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Favourite Listings</Text>
-
       {favourites.length === 0 ? (
         <Text style={styles.noFavourites}>No favourites added yet.</Text>
       ) : (
@@ -66,8 +65,21 @@ const FavouritesScreen = ({ navigation }) => {
                   />
                 )}
                 <Text style={styles.title}>{item.title}</Text>
+                <Text>
+                  From: {item.firstName} {item.lastName}
+                </Text>
                 <Text>Expires: {item.expiry}</Text>
-                <Text>From: {item.donor || "Unknown"}</Text>
+                <Text>Location: {item.address}</Text>
+
+                <View style={styles.ratingContainer}>
+                  <AirbnbRating
+                    count={5}
+                    defaultRating={item.rating}
+                    size={15}
+                    showRating={false}
+                    isDisabled
+                  />
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -83,10 +95,9 @@ const FavouritesScreen = ({ navigation }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  header: { fontSize: 24, fontWeight: "bold", padding: 16 },
+  header: { fontSize: 24, fontWeight: "bold", padding: 16, marginBottom: 10 },
   noFavourites: {
     textAlign: "center",
     fontSize: 16,
@@ -97,17 +108,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
     margin: 8,
-    borderRadius: 8,
-    elevation: 2,
+    borderRadius: 12,
+    elevation: 3,
+    position: "relative",
   },
-  title: { fontSize: 18, fontWeight: "600" },
+  title: { fontSize: 18, fontWeight: "bold" },
   listingImage: {
     width: "100%",
-    height: 150,
-    resizeMode: "contain",
+    height: 180,
+    resizeMode: "cover",
     borderRadius: 8,
     marginBottom: 10,
   },
+  ratingContainer: { marginTop: 5, alignItems: "flex-start" },
   favButton: { position: "absolute", top: 10, right: 10, padding: 10 },
   favButtonText: { fontSize: 22 },
 });

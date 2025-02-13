@@ -1,46 +1,140 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import { AirbnbRating } from "react-native-ratings";
 
 const ItemViewScreen = ({ route }) => {
   const item = route.params?.item || {};
 
   return (
-    <View style={styles.container}>
-      {Object.keys(item).length > 0 ? (
-        <>
-          {item.image && (
-            <Image source={{ uri: item.image }} style={styles.listingImage} />
-          )}
-          <Text style={styles.title}>{item.title}</Text>
-          <Text>Expiry: {item.expiry}</Text>
-          <Text>Donor: {item.donor || "Unknown"}</Text>
-          <Text>
-            Description: {item.description || "No description available"}
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.card}>
+        {/* Display Image */}
+        {item.image && (
+          <Image source={{ uri: item.image }} style={styles.listingImage} />
+        )}
+
+        {/* Title */}
+        <Text style={styles.title}>{item.title}</Text>
+
+        {/* Food Donor Info */}
+        <Text style={styles.subTitle}>
+          Donated By:{" "}
+          <Text style={styles.boldText}>
+            {item.firstName} {item.lastName}
           </Text>
-        </>
-      ) : (
-        <Text style={styles.text}>Select a listing to view details</Text>
-      )}
-    </View>
+        </Text>
+
+        {/* Expiry Date */}
+        <Text style={styles.expiryText}>Expires: {item.expiry}</Text>
+
+        {/* Address */}
+        {item.address && (
+          <View>
+            <Text style={styles.sectionTitle}>Collection Address</Text>
+            <Text style={styles.infoText}>{item.address}</Text>
+          </View>
+        )}
+
+        {/* Latitude & Longitude 
+{item.latitude && item.longitude && (
+          <View>
+            <Text style={styles.sectionTitle}>Coordinates</Text>
+            <Text style={styles.infoText}>
+              Latitude: {item.latitude} | Longitude: {item.longitude}
+            </Text>
+          </View>
+        )} */}
+
+        {/* Description */}
+        <Text style={styles.sectionTitle}>Description</Text>
+        <Text style={styles.description}>
+          {item.description || "No description available"}
+        </Text>
+
+        {/* Condition Rating */}
+        <View style={styles.ratingContainer}>
+          <Text style={styles.sectionTitle}>Condition Rating:</Text>
+          <AirbnbRating
+            count={5}
+            defaultRating={item.rating}
+            size={20}
+            showRating={false}
+            isDisabled
+          />
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: "#f4f4f4",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
+  card: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
   },
   listingImage: {
     width: "100%",
     height: 250,
-    resizeMode: "contain",
-    borderRadius: 10,
-    marginBottom: 10,
+    resizeMode: "cover",
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  subTitle: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 6,
+    textAlign: "center",
+  },
+  boldText: {
+    fontWeight: "bold",
+    color: "#42a5f5",
+  },
+  expiryText: {
+    fontSize: 14,
+    color: "#ff5252",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 12,
+    color: "#444",
+  },
+  infoText: {
+    fontSize: 15,
+    color: "#555",
+    lineHeight: 22,
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 15,
+    color: "#555",
+    lineHeight: 22,
+    marginBottom: 12,
+  },
+  ratingContainer: {
+    marginTop: 15,
+    alignItems: "center",
   },
 });
 

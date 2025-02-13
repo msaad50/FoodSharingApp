@@ -6,30 +6,29 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  TextInput,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import MapView, { Marker, Callout } from "react-native-maps";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import { useFocusEffect } from "@react-navigation/native";
 import { db } from "../config/firebaseConfig";
+import { useFocusEffect } from "@react-navigation/native";
+import { AirbnbRating } from "react-native-ratings";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
   const [favourites, setFavourites] = useState({});
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Load Listings from Firestore
   useEffect(() => {
     const q = query(collection(db, "listings"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setListings(items);
     });
     return () => unsubscribe();
   }, []);
 
-  // Load Favourites from AsyncStorage
   useFocusEffect(
     React.useCallback(() => {
       const loadFavourites = async () => {
@@ -50,8 +49,7 @@ const HomeScreen = ({ navigation }) => {
       loadFavourites();
     }, [])
   );
-
-  // Toggle Favourites
+  // Toggle Favourites & Sync with AsyncStorage
   const toggleFavourite = async (item) => {
     let storedFavourites = await AsyncStorage.getItem("favourites");
     storedFavourites = storedFavourites ? JSON.parse(storedFavourites) : [];
@@ -70,12 +68,21 @@ const HomeScreen = ({ navigation }) => {
     await AsyncStorage.setItem("favourites", JSON.stringify(storedFavourites));
   };
 
+  const filteredListings = listings.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <View style={styles.container}>
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search for food..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
       <Text style={styles.header}>Available Now</Text>
-
       <FlatList
-        data={listings}
+        data={filteredListings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.listingCard}>
@@ -89,10 +96,21 @@ const HomeScreen = ({ navigation }) => {
                 />
               )}
               <Text style={styles.title}>{item.title}</Text>
+              <Text>
+                From: {item.firstName} {item.lastName}
+              </Text>
               <Text>Expires: {item.expiry}</Text>
-              <Text>From: {item.donor || "Unknown"}</Text>
+              <Text>Location: {item.address}</Text>
+              <View style={styles.ratingContainer}>
+                <AirbnbRating
+                  count={5}
+                  defaultRating={item.rating}
+                  size={15}
+                  showRating={false}
+                  isDisabled
+                />
+              </View>
             </TouchableOpacity>
-
             <TouchableOpacity
               style={styles.favButton}
               onPress={() => toggleFavourite(item)}
@@ -104,7 +122,42 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
       />
-
+      <Text style={styles.header}>Near You</Text>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 55.3781,
+          longitude: -3.436,
+          latitudeDelta: 5.5,
+          longitudeDelta: 5.5,
+        }}
+      >
+        {listings.map((item) =>
+          item.latitude && item.longitude ? (
+            <Marker
+              key={item.id}
+              coordinate={{
+                latitude: item.latitude,
+                longitude: item.longitude,
+              }}
+            >
+              <Callout
+                onPress={() => navigation.navigate("ItemView", { item })}
+              >
+                <View style={{ width: 200 }}>
+                  <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
+                  <Text>{item.address}</Text>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={{ width: "100%", height: 100, marginTop: 5 }}
+                  />
+                  <Text style={{ color: "blue" }}>View Details</Text>
+                </View>
+              </Callout>
+            </Marker>
+          ) : null
+        )}
+      </MapView>
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate("Add")}
@@ -117,23 +170,50 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  header: { fontSize: 24, fontWeight: "bold", padding: 16 },
+  searchBar: {
+    height: 40,
+    borderColor: "#ddd",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    backgroundColor: "#f9f9f9",
+  },
+  addressText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
+    color: "#555",
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    padding: 10,
+    marginTop: 5,
+  },
+  map: {
+    height: 200,
+    marginBottom: 10,
+    borderRadius: 10,
+  },
   listingCard: {
     backgroundColor: "#fff",
     padding: 16,
     margin: 8,
-    borderRadius: 8,
-    elevation: 2,
+    borderRadius: 12,
+    elevation: 3,
     position: "relative",
   },
-  title: { fontSize: 18, fontWeight: "600" },
+  title: { fontSize: 18, fontWeight: "bold" },
   listingImage: {
     width: "100%",
-    height: 150,
-    resizeMode: "contain",
+    height: 180,
+    resizeMode: "cover",
     borderRadius: 8,
     marginBottom: 10,
   },
+  ratingContainer: { marginTop: 5, alignItems: "flex-start" },
   favButton: { position: "absolute", top: 10, right: 10, padding: 10 },
   favButtonText: { fontSize: 22 },
   addButton: {
