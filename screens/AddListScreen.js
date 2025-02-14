@@ -161,7 +161,7 @@ const AddListScreen = ({ navigation }) => {
             style={styles.input}
           />
           <TextInput
-            placeholder="Food Title *"
+            placeholder="Item Title *"
             value={title}
             onChangeText={setTitle}
             style={styles.input}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebaseConfig";
@@ -14,17 +15,34 @@ const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
 
   const handleSignup = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      setError(err.message);
-    }
+    setSigningIn(true); // Show loading screen
+
+    setTimeout(async () => {
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setSigningIn(false); // Hide loading screen
+      }
+    }, 2000); // Simulate 2 seconds loading time
   };
 
+  if (signingIn) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.logo}>ecoBites</Text>
+        <ActivityIndicator size="large" color="#42a5f5" />
+        <Text style={styles.loadingText}>Signing in...</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
+    <View style={styles.formContainer}>
       <Text style={styles.title}>Sign Up</Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -52,7 +70,29 @@ const SignupScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 16 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+  },
+  logo: {
+    fontSize: 36,
+    color: "#42a5f5",
+    letterSpacing: 3,
+    marginBottom: 20,
+    fontFamily: "Courier",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 16,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",

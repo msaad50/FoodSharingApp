@@ -6,6 +6,7 @@ import SignupScreen from "../screens/SignupScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import { useAuth } from "../contexts/AuthContext";
 import ItemViewScreen from "../view/ItemViewScreen";
+import ViewSeeAllScreen from "../view/ViewSeeAllScreen";
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,7 @@ const AppNavigator = () => {
           title: route.params?.item?.title || "Item",
         })}
       />
+      <Stack.Screen name="See All" component={ViewSeeAllScreen} />
     </Stack.Navigator>
   );
 };
