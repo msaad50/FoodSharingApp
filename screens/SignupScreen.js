@@ -18,7 +18,7 @@ const SignupScreen = ({ navigation }) => {
   const [signingIn, setSigningIn] = useState(false);
 
   const handleSignup = async () => {
-    setSigningIn(true); // Show loading screen
+    setSigningIn(true);
 
     setTimeout(async () => {
       try {
@@ -26,7 +26,7 @@ const SignupScreen = ({ navigation }) => {
       } catch (err) {
         setError(err.message);
       } finally {
-        setSigningIn(false); // Hide loading screen
+        setSigningIn(false);
       }
     }, 2000); // Simulate 2 seconds loading time
   };

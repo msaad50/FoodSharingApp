@@ -22,7 +22,6 @@ const AboutUsScreen = () => {
       </Text>
       <View style={styles.spacing} />
 
-      {/* ecoBites Logo at the Bottom */}
       <Text style={styles.logo}>ecoBites</Text>
       <Text style={styles.logoSubtitle}>
         Connecting Communities • Reducing Waste
@@ -68,7 +67,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   spacing: {
-    height: 50, // Added extra spacing
+    height: 50,
   },
   logo: {
     fontSize: 36,

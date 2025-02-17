@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   if (loading) {
     return (
       <Text style={{ textAlign: "center", marginTop: 50 }}>Loading...</Text>
-    ); // Ensure the string is wrapped in <Text>
+    );
   }
 
   return (

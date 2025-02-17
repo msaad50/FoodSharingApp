@@ -180,7 +180,6 @@ const AddListScreen = ({ navigation }) => {
             style={styles.input}
           />
 
-          {/* 🏠 Address Input */}
           <TextInput
             placeholder="Collection Address *"
             value={address}
@@ -194,7 +193,6 @@ const AddListScreen = ({ navigation }) => {
             <Image source={{ uri: image }} style={styles.imagePreview} />
           )}
 
-          {/* ⭐ Food Quality Rating */}
           <Text style={styles.ratingLabel}>Rate the food quality:</Text>
           <AirbnbRating
             count={5}
