@@ -1,22 +1,21 @@
-import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import { signOut } from "firebase/auth";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { auth } from "../config/firebaseConfig";
 
 const ProfileScreen = () => {
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      console.log("User logged out!");
-    } catch (err) {
-      console.error(err);
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      setUserEmail(auth.currentUser.email);
     }
-  };
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      <Button title="Logout" onPress={handleLogout} color="#d9534f" />
+      <Text style={styles.title}>Your Profile</Text>
+      <Text style={styles.label}>Logged in as:</Text>
+      <Text style={styles.email}>{userEmail}</Text>
     </View>
   );
 };
@@ -29,9 +28,20 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#42a5f5",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#444",
+  },
+  email: {
+    fontSize: 18,
+    color: "#555",
+    marginTop: 5,
   },
 });
 
