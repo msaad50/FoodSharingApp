@@ -6,10 +6,10 @@ const AboutUsScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>About Us</Text>
       <Text style={styles.mission}>
-        🌱 <Text style={{ fontWeight: "bold", fontSize: 19 }}>ecoBites</Text> is
-        on a mission to reduce food waste and build a sustainable future. We
-        connect people who have excess food with those who need it, fostering a
-        sharing community while helping the planet.
+        🌱 <Text style={{ fontSize: 19 }}>ecoBites</Text> is on a mission to
+        reduce food waste and build a sustainable future. We connect people who
+        have excess food with those who need it, fostering a sharing community
+        while helping the planet.
       </Text>
       <Text style={styles.description}>
         🥗 Through our platform, you can:
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     letterSpacing: 3,
     marginBottom: 5,
     fontFamily: "Courier",
-    fontWeight: "bold",
+    // fontWeight: "bold",
   },
   logoSubtitle: {
     fontSize: 14,
