@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     //  fontWeight: "bold",
     color: "#42a5f5",
     letterSpacing: 3,
-    marginBottom: 20, // Space between logo and spinner
+    marginBottom: 20,
     fontFamily: "Courier",
   },
   loadingText: {

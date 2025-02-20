@@ -18,7 +18,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { AirbnbRating } from "react-native-ratings";
 
-const GOOGLE_API_KEY = "AIzaSyAu7fsmTRtW4qOTEXP3wBBa658hnFm_49A";
+const GOOGLE_API_KEY = ""; // GOOGLE_API_KEY = "AIzaSyAu7fsmTRtW4qOTEXP3wBBa658hnFm_49A";
 
 const AddListScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -180,7 +180,6 @@ const AddListScreen = ({ navigation }) => {
             style={styles.input}
           />
 
-          {/* 🏠 Address Input */}
           <TextInput
             placeholder="Collection Address *"
             value={address}
@@ -194,7 +193,6 @@ const AddListScreen = ({ navigation }) => {
             <Image source={{ uri: image }} style={styles.imagePreview} />
           )}
 
-          {/* ⭐ Food Quality Rating */}
           <Text style={styles.ratingLabel}>Rate the food quality:</Text>
           <AirbnbRating
             count={5}
