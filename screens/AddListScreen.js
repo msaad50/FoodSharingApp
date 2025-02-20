@@ -18,7 +18,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { AirbnbRating } from "react-native-ratings";
 
-const GOOGLE_API_KEY = "AIzaSyAu7fsmTRtW4qOTEXP3wBBa658hnFm_49A";
+const GOOGLE_API_KEY = ""; // GOOGLE_API_KEY = "AIzaSyAu7fsmTRtW4qOTEXP3wBBa658hnFm_49A";
 
 const AddListScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
