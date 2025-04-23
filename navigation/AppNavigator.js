@@ -9,6 +9,7 @@ import ItemViewScreen from "../view/ItemViewScreen";
 import ViewSeeAllScreen from "../view/ViewSeeAllScreen";
 import AboutUsScreen from "../screens/AboutUsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import AddListAddressScreen from "../screens/AddListAddressScreen";
 
 const Stack = createStackNavigator();
 
@@ -56,6 +57,7 @@ const AppNavigator = () => {
       <Stack.Screen name="See All" component={ViewSeeAllScreen} />
       <Stack.Screen name="About Us" component={AboutUsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Add Address" component={AddListAddressScreen} />
     </Stack.Navigator>
   );
 };

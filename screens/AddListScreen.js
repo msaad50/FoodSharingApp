@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+/* import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { AirbnbRating } from "react-native-ratings";
 
-const GOOGLE_API_KEY = ""; // GOOGLE_API_KEY = "AIzaSyAu7fsmTRtW4qOTEXP3wBBa658hnFm_49A";
+const GOOGLE_API_KEY = "AIzaSyCYqNe56qzLAp9T4zKAgKuEkHHigcNYc3o"; // GOOGLE_API_KEY = "AIzaSyAu7fsmTRtW4qOTEXP3wBBa658hnFm_49A";
 
 const AddListScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -243,6 +243,184 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 5,
     textAlign: "center",
+  },
+});
+
+export default AddListScreen;
+*/
+
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Button,
+  Alert,
+  Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import { AirbnbRating } from "react-native-ratings";
+
+const AddListScreen = ({ navigation }) => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [image, setImage] = useState(null);
+  const [rating, setRating] = useState(3);
+
+  useEffect(() => {
+    (async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission Required",
+          "Enable permissions to upload images."
+        );
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets?.length > 0) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Image Picker Error:", error);
+    }
+  };
+
+  const handleNext = () => {
+    if (!firstName || !lastName || !title || !expiry) {
+      Alert.alert("Validation Error", "Please fill all required fields.");
+      return;
+    }
+
+    const formData = {
+      firstName,
+      lastName,
+      title,
+      description,
+      expiry,
+      image,
+      rating,
+    };
+
+    navigation.navigate("Add Address", formData);
+  };
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.step}>Step 1 of 2</Text>
+
+        <TextInput
+          placeholder="First Name *"
+          value={firstName}
+          onChangeText={setFirstName}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Last Name *"
+          value={lastName}
+          onChangeText={setLastName}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Item Title *"
+          value={title}
+          onChangeText={setTitle}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Description"
+          value={description}
+          onChangeText={setDescription}
+          multiline
+          style={[styles.input, { height: 100 }]}
+        />
+        <TextInput
+          placeholder="Expiry Date (YYYY-MM-DD) *"
+          value={expiry}
+          onChangeText={setExpiry}
+          style={styles.input}
+        />
+
+        <Button title="Upload Photo" onPress={pickImage} />
+        {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
+
+        <Text style={styles.ratingLabel}>Rate the food quality:</Text>
+        <AirbnbRating
+          count={5}
+          defaultRating={rating}
+          size={30}
+          onFinishRating={setRating}
+        />
+
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+          <Text style={styles.nextButtonText}>Next ➡️</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: "#f9f9f9" },
+  scrollContainer: { paddingBottom: 50 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 6,
+    backgroundColor: "#fff",
+  },
+  imagePreview: {
+    width: "100%",
+    height: 200,
+    resizeMode: "cover",
+    marginVertical: 10,
+    borderRadius: 10,
+  },
+  ratingLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  nextButton: {
+    backgroundColor: "#42a5f5",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  nextButtonText: { color: "white", fontWeight: "bold" },
+  step: {
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
+    fontSize: 16,
+    color: "#42a5f5",
   },
 });
 
