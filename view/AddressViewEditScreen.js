@@ -9,18 +9,20 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 const GOOGLE_API_KEY = "AIzaSyCYqNe56qzLAp9T4zKAgKuEkHHigcNYc3o";
 
-const AddListAddressScreen = ({ route, navigation }) => {
-  const [address, setAddress] = useState("");
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+const AddressViewEditScreen = ({ route, navigation }) => {
+  const item = route.params?.item;
+  const updatedDetails = route.params?.updatedDetails;
+  const from = route.params?.from;
 
-  const formData = route.params;
+  const [address, setAddress] = useState(item.address || "");
+  const [latitude, setLatitude] = useState(item.latitude || null);
+  const [longitude, setLongitude] = useState(item.longitude || null);
 
   const handleSubmit = async () => {
     if (!address || !latitude || !longitude) {
@@ -29,22 +31,38 @@ const AddListAddressScreen = ({ route, navigation }) => {
     }
 
     try {
-      const { resetForm, ...cleanedFormData } = formData;
-
-      await addDoc(collection(db, "listings"), {
-        ...cleanedFormData,
+      const ref = doc(db, "listings", item.id);
+      await updateDoc(ref, {
+        ...updatedDetails,
         address,
         latitude,
         longitude,
-        createdAt: serverTimestamp(),
       });
 
-      if (resetForm) resetForm();
-      Alert.alert("Success", "Listing submitted!");
-      navigation.navigate("Tabs");
+      Alert.alert("Success", "Listing updated!");
+
+      navigation.reset({
+        index: 1,
+        routes: [
+          { name: "Tabs" },
+          {
+            name: "ItemView",
+            params: {
+              item: {
+                ...item,
+                ...updatedDetails,
+                address,
+                latitude,
+                longitude,
+              },
+              from,
+            },
+          },
+        ],
+      });
     } catch (error) {
-      console.error("Error saving listing:", error);
-      Alert.alert("Error", "Failed to submit the listing.");
+      console.error("Error updating address:", error);
+      Alert.alert("Error", "Failed to update address.");
     }
   };
 
@@ -55,9 +73,9 @@ const AddListAddressScreen = ({ route, navigation }) => {
     >
       <View style={styles.inner}>
         <Text style={styles.step}>Step 2 of 2</Text>
-        <Text style={styles.label}>Collection Address *</Text>
+        <Text style={styles.label}>Update Collection Address *</Text>
         <GooglePlacesAutocomplete
-          placeholder="Enter collection address"
+          placeholder="Search new address"
           fetchDetails={true}
           onPress={(data, details = null) => {
             setAddress(data.description);
@@ -78,29 +96,20 @@ const AddListAddressScreen = ({ route, navigation }) => {
 
         <TouchableOpacity
           style={styles.cancelButton}
-          onPress={() => {
-            if (formData?.resetForm) formData.resetForm();
-            navigation.goBack();
-          }}
+          onPress={() => navigation.goBack()}
         >
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
 
-        <Button title="Submit Listing" onPress={handleSubmit} color="#42a5f5" />
+        <Button title="Save Changes" onPress={handleSubmit} color="#42a5f5" />
       </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#f9f9f9",
-  },
-  inner: {
-    flex: 1,
-  },
+  container: { flex: 1, padding: 16, backgroundColor: "#f9f9f9" },
+  inner: { flex: 1 },
   input: {
     borderWidth: 1,
     borderColor: "#ddd",
@@ -108,11 +117,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: "#fff",
   },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 5,
-    color: "#333",
-  },
+  label: { fontWeight: "bold", marginBottom: 5, color: "#333" },
   step: {
     fontWeight: "bold",
     textAlign: "center",
@@ -121,11 +126,11 @@ const styles = StyleSheet.create({
     color: "#42a5f5",
   },
   cancelButton: {
-    marginBottom: 20,
     backgroundColor: "#ccc",
     padding: 12,
     borderRadius: 6,
     alignItems: "center",
+    marginBottom: 20,
   },
   cancelText: {
     color: "#42a5f5",
@@ -134,4 +139,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddListAddressScreen;
+export default AddressViewEditScreen;

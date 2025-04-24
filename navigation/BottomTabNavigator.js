@@ -25,10 +25,26 @@ const BottomTabNavigator = () => {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Favourites" component={FavouritesScreen} />
-      <Tab.Screen name="Add" component={AddListScreen} />
-      <Tab.Screen name="More" component={MoreScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerBackTitleVisible: false }}
+      />
+      <Tab.Screen
+        name="Favourites"
+        component={FavouritesScreen}
+        options={{ headerBackTitleVisible: false, gestureEnabled: false }}
+      />
+      <Tab.Screen
+        name="Add"
+        component={AddListScreen}
+        options={{ headerBackTitleVisible: false, title: "Add Details" }}
+      />
+      <Tab.Screen
+        name="More"
+        component={MoreScreen}
+        options={{ headerBackTitleVisible: false }}
+      />
     </Tab.Navigator>
   );
 };

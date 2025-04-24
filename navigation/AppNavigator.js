@@ -10,6 +10,9 @@ import ViewSeeAllScreen from "../view/ViewSeeAllScreen";
 import AboutUsScreen from "../screens/AboutUsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AddListAddressScreen from "../screens/AddListAddressScreen";
+import ItemViewEditScreen from "../view/ItemViewEditScreen";
+import AddressViewEditScreen from "../view/AddressViewEditScreen";
+import RouteMapScreen from "../screens/RouteMapScreen";
 
 const Stack = createStackNavigator();
 
@@ -34,10 +37,15 @@ const AppNavigator = () => {
   }
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerBackTitle: "",
+        headerBackTitleVisible: false,
+      }}
+    >
       {user ? (
         <Stack.Screen
-          name="Main"
+          name="Tabs"
           component={BottomTabNavigator}
           options={{ headerShown: false }}
         />
@@ -58,6 +66,30 @@ const AppNavigator = () => {
       <Stack.Screen name="About Us" component={AboutUsScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Add Address" component={AddListAddressScreen} />
+      <Stack.Screen
+        name="Edit Item"
+        component={ItemViewEditScreen}
+        options={{
+          headerTitle: "Edit Listing",
+          headerBackTitle: "",
+          headerBackTitleVisible: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="Edit Address"
+        component={AddressViewEditScreen}
+        options={{
+          headerTitle: "Edit Address",
+          headerBackTitle: "",
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="Route Map"
+        component={RouteMapScreen}
+        options={{ title: "Route to Collection Point" }}
+      />
     </Stack.Navigator>
   );
 };

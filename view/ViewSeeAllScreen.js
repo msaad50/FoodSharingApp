@@ -17,26 +17,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const ViewSeeAllScreen = ({ navigation }) => {
   const [listings, setListings] = useState([]);
   const [favourites, setFavourites] = useState({});
+  const [favIds, setFavIds] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const q = query(collection(db, "listings"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setListings(items);
-    });
-    return () => unsubscribe();
-  }, []);
-
+  // Load favourite IDs on focus
   useFocusEffect(
     React.useCallback(() => {
       const loadFavourites = async () => {
         try {
-          const storedFavourites = await AsyncStorage.getItem("favourites");
+          const storedFavourites = await AsyncStorage.getItem("Favourites");
           if (storedFavourites) {
             const favItems = JSON.parse(storedFavourites);
-            const favMap = favItems.reduce((acc, item) => {
-              acc[item.id] = true;
+            const ids = favItems.map((item) => item.id);
+            setFavIds(ids);
+            const favMap = ids.reduce((acc, id) => {
+              acc[id] = true;
               return acc;
             }, {});
             setFavourites(favMap);
@@ -49,22 +44,36 @@ const ViewSeeAllScreen = ({ navigation }) => {
     }, [])
   );
 
+  // Real-time listing updates
+  useEffect(() => {
+    const q = query(collection(db, "listings"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setListings(items);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const toggleFavourite = async (item) => {
-    let storedFavourites = await AsyncStorage.getItem("favourites");
+    let storedFavourites = await AsyncStorage.getItem("Favourites");
     storedFavourites = storedFavourites ? JSON.parse(storedFavourites) : [];
 
+    let updatedFavourites;
     if (favourites[item.id]) {
-      storedFavourites = storedFavourites.filter((fav) => fav.id !== item.id);
+      updatedFavourites = storedFavourites.filter((fav) => fav.id !== item.id);
     } else {
-      storedFavourites.push(item);
+      updatedFavourites = [...storedFavourites, item];
     }
 
-    setFavourites((prev) => ({
-      ...prev,
-      [item.id]: !prev[item.id],
-    }));
+    const favMap = updatedFavourites.reduce((acc, fav) => {
+      acc[fav.id] = true;
+      return acc;
+    }, {});
 
-    await AsyncStorage.setItem("favourites", JSON.stringify(storedFavourites));
+    setFavourites(favMap);
+    setFavIds(updatedFavourites.map((fav) => fav.id));
+
+    await AsyncStorage.setItem("Favourites", JSON.stringify(updatedFavourites));
   };
 
   const filteredListings = listings.filter((item) =>
@@ -90,7 +99,9 @@ const ViewSeeAllScreen = ({ navigation }) => {
           renderItem={({ item }) => (
             <View style={styles.listingCard}>
               <TouchableOpacity
-                onPress={() => navigation.navigate("ItemView", { item })}
+                onPress={() =>
+                  navigation.navigate("ItemView", { item, from: "See All" })
+                }
               >
                 {item.image && (
                   <Image

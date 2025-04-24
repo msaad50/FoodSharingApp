@@ -1,9 +1,23 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { AirbnbRating } from "react-native-ratings";
 
-const ItemViewScreen = ({ route }) => {
-  const item = route.params?.item || {};
+const ItemViewScreen = ({ route, navigation }) => {
+  const { item, from } = route.params;
+
+  /*React.useLayoutEffect(() => {
+    navigation.setOptions({
+      // Use the default back button (no custom headerLeft)
+      headerBackTitleVisible: false,
+    });
+  }, [navigation]); */
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -35,16 +49,6 @@ const ItemViewScreen = ({ route }) => {
           </View>
         )}
 
-        {/* Latitude & Longitude 
-{item.latitude && item.longitude && (
-          <View>
-            <Text style={styles.sectionTitle}>Coordinates</Text>
-            <Text style={styles.infoText}>
-              Latitude: {item.latitude} | Longitude: {item.longitude}
-            </Text>
-          </View>
-        )} */}
-
         {/* Description */}
         <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.description}>
@@ -62,6 +66,21 @@ const ItemViewScreen = ({ route }) => {
             isDisabled
           />
         </View>
+
+        {/* Modify Button */}
+        <TouchableOpacity
+          style={styles.modifyButton}
+          onPress={() => navigation.navigate("Edit Item", { item, from })}
+        >
+          <Text style={styles.modifyButtonText}>Modify Listing</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.routeButton}
+          onPress={() => navigation.navigate("Route Map", { item })}
+        >
+          <Text style={styles.routeButtonText}>View Route to Collection</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -135,6 +154,30 @@ const styles = StyleSheet.create({
   ratingContainer: {
     marginTop: 15,
     alignItems: "center",
+  },
+  modifyButton: {
+    marginTop: 20,
+    backgroundColor: "#42a5f5",
+    padding: 12,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  modifyButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  routeButton: {
+    marginTop: 10,
+    backgroundColor: "#4caf50",
+    padding: 12,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  routeButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 

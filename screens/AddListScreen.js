@@ -275,6 +275,16 @@ const AddListScreen = ({ navigation }) => {
   const [image, setImage] = useState(null);
   const [rating, setRating] = useState(3);
 
+  const resetForm = () => {
+    setFirstName("");
+    setLastName("");
+    setTitle("");
+    setDescription("");
+    setExpiry("");
+    setImage(null);
+    setRating(3);
+  };
+
   useEffect(() => {
     (async () => {
       const { status } =
@@ -320,7 +330,7 @@ const AddListScreen = ({ navigation }) => {
       rating,
     };
 
-    navigation.navigate("Add Address", formData);
+    navigation.navigate("Add Address", { ...formData, resetForm });
   };
 
   return (
@@ -376,6 +386,15 @@ const AddListScreen = ({ navigation }) => {
 
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <Text style={styles.nextButtonText}>Next ➡️</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.nextButton, { backgroundColor: "#ccc" }]}
+          onPress={() => {
+            resetForm();
+            navigation.goBack();
+          }}
+        >
+          <Text style={styles.nextButtonText}>Cancel</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
